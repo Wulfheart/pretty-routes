@@ -3,12 +3,10 @@
 namespace Wulfheart\PrettyRoutes\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Console\RouteListCommand;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Terminal;
 
 class PrettyRoutesCommand extends Command
@@ -48,7 +46,6 @@ class PrettyRoutesCommand extends Command
         return $this->terminalWidth;
     }
 
-
     public function __construct(Router $router)
     {
         parent::__construct();
@@ -73,8 +70,7 @@ class PrettyRoutesCommand extends Command
             return $this->error("Your application doesn't have any routes matching the given criteria.");
         }
 
-                $this->displayRoutes($routes);
-
+        $this->displayRoutes($routes);
     }
 
     /**
@@ -109,7 +105,7 @@ class PrettyRoutesCommand extends Command
     protected function getRouteInformation(Route $route)
     {
 //        return $this->filterRoute([
-            //            'domain' => $route->domain(),
+        //            'domain' => $route->domain(),
 //            'method' => implode('|',
 //                array_map(function ($method) {
 //                    $color = [
@@ -184,18 +180,17 @@ class PrettyRoutesCommand extends Command
 
         $maxMethod = strlen(collect($routes)->max('method'));
 
-        foreach ($routes as $route){
-
+        foreach ($routes as $route) {
             $method = $route["method"];
             $uri = $route["uri"];
             $name = $route["name"];
 
             $spaces = str_repeat(' ', $maxMethod + 6 - strlen($method));
 
-            $additionalSpace = !is_null($name) ? 1 : 0;
+            $additionalSpace = ! is_null($name) ? 1 : 0;
             $dots = str_repeat('.', max($terminalWidth - strlen($method.$uri.$name) - strlen($spaces) - 14 - $additionalSpace, 0));
 
-            $method = implode('|', array_map(function ($m){
+            $method = implode('|', array_map(function ($m) {
                 // ['GET' => 'success', 'HEAD' => 'default', 'OPTIONS' => 'default', 'POST' => 'primary', 'PUT' => 'warning', 'PATCH' => 'info', 'DELETE' => 'danger']
 
                 $color = match ($m) {
@@ -208,8 +203,9 @@ class PrettyRoutesCommand extends Command
                     'DELETE' => 'red',
                     default => 'white',
                 };
+
                 return sprintf("<fg=%s>%s</>", $color, $m);
-            },explode('|', $method)));
+            }, explode('|', $method)));
 
             $this->output->writeln(sprintf(
                 '  <fg=white;options=bold>%s</>%s<fg=white;options=bold>%s</><fg=#6C7280> %s </>%s',
@@ -220,7 +216,5 @@ class PrettyRoutesCommand extends Command
                 $name,
             ));
         }
-
     }
-
 }
