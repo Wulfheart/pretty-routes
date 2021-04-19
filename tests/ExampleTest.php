@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Wulfheart\PrettyRoutes\Tests;
 
 class ExampleTest extends TestCase
 {

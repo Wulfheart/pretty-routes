@@ -1,17 +1,17 @@
 {
-    "name": "vendor_slug/package_slug",
-    "description": ":package_description",
+    "name": "wulfheart/pretty_routes",
+    "description": "This is my package PrettyRoutes",
     "keywords": [
-        ":vendor_name",
+        "Wulfheart",
         "laravel",
-        "package_slug"
+        "pretty_routes"
     ],
-    "homepage": "https://github.com/vendor_slug/package_slug",
+    "homepage": "https://github.com/wulfheart/pretty_routes",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Alexander Wulf",
+            "email": "dev@alexfwulf.de",
             "role": "Developer"
         }
     ],
@@ -30,13 +30,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories"
+            "Wulfheart\\PrettyRoutes\\": "src",
+            "Wulfheart\\PrettyRoutes\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests"
+            "Wulfheart\\PrettyRoutes\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -50,10 +50,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Wulfheart\\PrettyRoutes\\PrettyRoutesServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\SkeletonFacade"
+                "PrettyRoutes": "Wulfheart\\PrettyRoutes\\PrettyRoutesFacade"
             }
         }
     },
