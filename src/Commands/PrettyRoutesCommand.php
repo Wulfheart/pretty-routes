@@ -164,9 +164,7 @@ class PrettyRoutesCommand extends Command
             $dots = str_repeat('.', max($terminalWidth - strlen($method.$uri.$name) - strlen($spaces) - 14 - $additionalSpace, 0));
 
             $method = implode('|', array_map(function ($m) {
-                // ['GET' => 'success', 'HEAD' => 'default', 'OPTIONS' => 'default', 'POST' => 'primary', 'PUT' => 'warning', 'PATCH' => 'info', 'DELETE' => 'danger']
-
-                $color = match ($m) {
+                $color = [
                     'GET' => 'green',
                     'HEAD' => 'default',
                     'OPTIONS' => 'default',
@@ -174,9 +172,7 @@ class PrettyRoutesCommand extends Command
                     'PUT' => 'yellow',
                     'PATCH' => 'yellow',
                     'DELETE' => 'red',
-                    default => 'white',
-                };
-
+                ][$m] ?? 'white';
                 return sprintf("<fg=%s>%s</>", $color, $m);
             }, explode('|', $method)));
 
