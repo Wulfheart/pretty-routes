@@ -104,30 +104,6 @@ class PrettyRoutesCommand extends Command
      */
     protected function getRouteInformation(Route $route)
     {
-<<<<<<< HEAD
-=======
-//        return $this->filterRoute([
-        //            'domain' => $route->domain(),
-//            'method' => implode('|',
-//                array_map(function ($method) {
-//                    $color = [
-//                            'GET' => 'cyan',
-//                            'HEAD' => 'default',
-//                            'OPTIONS' => 'default',
-//                            'POST' => 'magenta',
-//                            'PUT' => 'yellow',
-//                            'PATCH' => 'yellow',
-//                            'DELETE' => 'red',
-//                        ][$method] ?? 'default';
-//                    return sprintf('<fg=%s>%s</>', $color, $method);
-//                }, $route->methods()),
-//            ),
-//            'uri' => $route->uri(),
-//            'name' => $route->getName(),
-//            //            'action' => ltrim($route->getActionName(), '\\'),
-//            //            'middleware' => $this->getMiddleware($route),
-//        ]);
->>>>>>> 44d0c8e74a3976b44aebd444b17e57a41d18d1a4
         return $this->filterRoute([
             'method' => implode('|', $route->methods()),
             'uri' => $route->uri(),
