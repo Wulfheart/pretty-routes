@@ -18,7 +18,7 @@ class PrettyRoutesCommand extends Command
     {--reverse}
     ';
 
-    public $description = 'My command';
+    public $description = 'List all registered routes in a pretty format';
 
 
     /**
