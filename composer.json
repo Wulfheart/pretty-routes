@@ -1,12 +1,12 @@
 {
-    "name": "elsayed85/pretty_routes",
+    "name": "wulfheart/pretty_routes",
     "description": "This is my package PrettyRoutes",
     "keywords": [
         "Wulfheart",
         "laravel",
         "pretty_routes"
     ],
-    "homepage": "https://github.com/elsayed85/pretty_routes",
+    "homepage": "https://github.com/wulfheart/pretty_routes",
     "license": "MIT",
     "authors": [
         {
