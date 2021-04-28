@@ -5,7 +5,7 @@
 
 Display your Laravel routes in the console, but make it pretty. 😎
 
-[<img src="https://user-images.githubusercontent.com/25671390/116441604-e0aa3300-a851-11eb-9e98-a59ff356c9dc.png"/>]
+<img src="https://user-images.githubusercontent.com/25671390/116441604-e0aa3300-a851-11eb-9e98-a59ff356c9dc.png"/>
 
 ## Installation
 
