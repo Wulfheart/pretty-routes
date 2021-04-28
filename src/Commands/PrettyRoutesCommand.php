@@ -15,8 +15,8 @@ class PrettyRoutesCommand extends Command
 {
     public $signature = 'route:pretty 
     {--sort=uri}
-    {--except-path}
-    {--method}
+    {--except-path=}
+    {--method=}
     {--reverse}
     ';
 
@@ -108,34 +108,10 @@ class PrettyRoutesCommand extends Command
      */
     protected function getRouteInformation(Route $route)
     {
-//        return $this->filterRoute([
-            //            'domain' => $route->domain(),
-//            'method' => implode('|',
-//                array_map(function ($method) {
-//                    $color = [
-//                            'GET' => 'cyan',
-//                            'HEAD' => 'default',
-//                            'OPTIONS' => 'default',
-//                            'POST' => 'magenta',
-//                            'PUT' => 'yellow',
-//                            'PATCH' => 'yellow',
-//                            'DELETE' => 'red',
-//                        ][$method] ?? 'default';
-//                    return sprintf('<fg=%s>%s</>', $color, $method);
-//                }, $route->methods()),
-//            ),
-//            'uri' => $route->uri(),
-//            'name' => $route->getName(),
-//            //            'action' => ltrim($route->getActionName(), '\\'),
-//            //            'middleware' => $this->getMiddleware($route),
-//        ]);
         return $this->filterRoute([
-            //            'domain' => $route->domain(),
             'method' => implode('|', $route->methods()),
             'uri' => $route->uri(),
             'name' => $route->getName(),
-            //            'action' => ltrim($route->getActionName(), '\\'),
-            //            'middleware' => $this->getMiddleware($route),
         ]);
     }
 
@@ -161,12 +137,9 @@ class PrettyRoutesCommand extends Command
      */
     protected function filterRoute(array $route)
     {
-        //        if (($this->option('name') && ! Str::contains($route['name'], $this->option('name'))) ||
-        //            $this->option('path') && ! Str::contains($route['uri'], $this->option('path')) ||
-        //            $this->option('method') && ! Str::contains($route['method'], strtoupper($this->option('method')))) {
-        //            return;
-        //        }
-
+        if ($this->option('method') && ! Str::contains($route['method'], strtoupper($this->option('method')))) {
+            return;
+        }
         if ($this->option('except-path')) {
             foreach (explode(',', $this->option('except-path')) as $path) {
                 if (Str::contains($route['uri'], $path)) {
@@ -200,7 +173,7 @@ class PrettyRoutesCommand extends Command
 
                 $color = match ($m) {
                     'GET' => 'green',
-                    'HEAD' => 'white',
+                    'HEAD' => 'default',
                     'OPTIONS' => 'default',
                     'POST' => 'magenta',
                     'PUT' => 'yellow',
