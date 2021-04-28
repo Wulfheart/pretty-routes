@@ -11,7 +11,7 @@ use Symfony\Component\Console\Terminal;
 
 class PrettyRoutesCommand extends Command
 {
-    public $signature = 'route:pretty 
+    public $signature = 'route:pretty
     {--sort=uri}
     {--except-path=}
     {--method=}
@@ -133,7 +133,7 @@ class PrettyRoutesCommand extends Command
      */
     protected function filterRoute(array $route)
     {
-        if ($this->option('method') && ! Str::contains($route['method'], strtoupper($this->option('method')))) {
+        if ($this->option('method') && !Str::contains($route['method'], strtoupper($this->option('method')))) {
             return;
         }
         if ($this->option('except-path')) {
@@ -158,15 +158,17 @@ class PrettyRoutesCommand extends Command
             $uri = $route["uri"];
             $name = $route["name"];
 
-            $spaces = str_repeat(' ', $maxMethod + 6 - strlen($method));
+            $len = $maxMethod + 6 - strlen($method);
 
-            $additionalSpace = ! is_null($name) ? 1 : 0;
-            $dots = str_repeat('.', max($terminalWidth - strlen($method.$uri.$name) - strlen($spaces) - 14 - $additionalSpace, 0));
+            $len = $len >= 0 ? $len : 1;
+
+            $spaces = str_repeat(' ', $len);
+
+            $additionalSpace = !is_null($name) ? 1 : 0;
+            $dots = str_repeat('.', max($terminalWidth - strlen($method . $uri . $name) - strlen($spaces) - 14 - $additionalSpace, 0));
 
             $method = implode('|', array_map(function ($m) {
-                // ['GET' => 'success', 'HEAD' => 'default', 'OPTIONS' => 'default', 'POST' => 'primary', 'PUT' => 'warning', 'PATCH' => 'info', 'DELETE' => 'danger']
-
-                $color = match ($m) {
+                $color = [
                     'GET' => 'green',
                     'HEAD' => 'default',
                     'OPTIONS' => 'default',
@@ -174,8 +176,7 @@ class PrettyRoutesCommand extends Command
                     'PUT' => 'yellow',
                     'PATCH' => 'yellow',
                     'DELETE' => 'red',
-                    default => 'white',
-                };
+                ][$m] ?? 'white';
 
                 return sprintf("<fg=%s>%s</>", $color, $m);
             }, explode('|', $method)));
