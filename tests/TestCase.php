@@ -38,4 +38,18 @@ class TestCase extends Orchestra
         (new \CreatePackageTable())->up();
         */
     }
+
+    public function defineRoutes($router)
+    {
+        $router->get('/', function () {
+            return view('welcome');
+        });
+
+        $router->get('admin', fn() => true);
+
+        $router->resource('test', Controller::class);
+
+        $router->get('/{one?}/{two}/some/{three?}', fn() => true);
+        $router->post('some/thing/{one?}/{two}/some/{three?}', fn() => true);
+    }
 }
