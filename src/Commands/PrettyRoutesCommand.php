@@ -27,7 +27,9 @@ class PrettyRoutesCommand extends Command
      *
      * @var int|null
      */
-    protected $terminalWidth;
+    protected ?int $terminalWidth = null;
+
+    protected Router $router;
 
     /**
      * Computes the terminal width.
