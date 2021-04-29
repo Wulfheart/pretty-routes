@@ -60,7 +60,9 @@ class PrettyRoutesCommand extends Command
      */
     public function handle()
     {
-        $this->router->flushMiddlewareGroups();
+        if (method_exists($this->router, 'flushMiddlewareGroups')) {
+            $this->router->flushMiddlewareGroups();
+        }
 
         if (empty($this->router->getRoutes())) {
             return $this->error("Your application doesn't have any routes.");
