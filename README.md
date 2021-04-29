@@ -24,6 +24,7 @@ or
 
 ```bash
 php artisan route:pretty --except-path=horizon --method=POST --reverse
+php artisan route:pretty --only-path=app --method=POST --reverse
 ```
 
 ## Changelog
