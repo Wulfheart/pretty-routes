@@ -154,10 +154,12 @@ class PrettyRoutesCommand extends Command
 
         if ($this->option('only-path')) {
             foreach (explode(',', $this->option('only-path')) as $path) {
-                if (! Str::contains($route['uri'], $path)) {
-                    return null;
+                if (Str::contains($route['uri'], $path)) {
+                    return $route;
                 }
             }
+
+            return null;
         }
 
         return $route;
