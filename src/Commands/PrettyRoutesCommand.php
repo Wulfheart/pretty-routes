@@ -9,8 +9,15 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Terminal;
 
+/**
+ * Class PrettyRoutesCommand
+ * @package Wulfheart\PrettyRoutes\Commands
+ */
 class PrettyRoutesCommand extends Command
 {
+    const MINIMUM_TERMINAL_WIDTH = 30;
+    const PRINTING_FORMAT = '  <fg=white;options=bold>%s</>%s<fg=white;options=bold>%s</><fg=#6C7280> %s </>%s';
+
     public $signature = 'route:pretty
     {--sort=uri}
     {--except-path=}
@@ -21,7 +28,6 @@ class PrettyRoutesCommand extends Command
 
     public $description = 'List all registered routes in a pretty format';
 
-
     /**
      * The current terminal width.
      *
@@ -29,31 +35,26 @@ class PrettyRoutesCommand extends Command
      */
     protected ?int $terminalWidth = null;
 
+    /**
+     * The Router.
+     *
+     * @var Router
+     */
     protected Router $router;
 
     /**
-     * Computes the terminal width.
+     * The Terminal.
      *
-     * @return int
+     * @var Terminal
      */
-    protected function getTerminalWidth()
-    {
-        if ($this->terminalWidth == null) {
-            $this->terminalWidth = (new Terminal())->getWidth();
+    protected Terminal $terminal;
 
-            $this->terminalWidth = $this->terminalWidth >= 30
-                ? $this->terminalWidth
-                : 30;
-        }
-
-        return $this->terminalWidth;
-    }
-
-    public function __construct(Router $router)
+    public function __construct(Router $router, Terminal $terminal)
     {
         parent::__construct();
 
         $this->router = $router;
+        $this->terminal = $terminal;
     }
 
     /**
@@ -68,14 +69,30 @@ class PrettyRoutesCommand extends Command
         }
 
         if (empty($this->router->getRoutes())) {
-            return $this->error("Your application doesn't have any routes.");
+            $this->error("Your application doesn't have any routes.");
+
+            return;
         }
 
         if (empty($routes = $this->getRoutes())) {
-            return $this->error("Your application doesn't have any routes matching the given criteria.");
+            $this->error("Your application doesn't have any routes matching the given criteria.");
+
+            return;
         }
 
         $this->displayRoutes($routes);
+    }
+
+    /**
+     * Computes the terminal width.
+     *
+     * @return int
+     */
+    protected function getTerminalWidth()
+    {
+        $width = $this->terminal->getWidth();
+
+        return $width >= self::MINIMUM_TERMINAL_WIDTH ? $width : self::MINIMUM_TERMINAL_WIDTH;
     }
 
     /**
@@ -98,7 +115,6 @@ class PrettyRoutesCommand extends Command
         }
 
         return $routes;
-        //        return $this->pluckColumns($routes);
     }
 
     /**
@@ -134,18 +150,18 @@ class PrettyRoutesCommand extends Command
      * Filter the route by URI and / or name.
      *
      * @param  array  $route
-     * @return array|null
+     * @return array
      */
     protected function filterRoute(array $route)
     {
         if ($this->option('method') && ! Str::contains($route['method'], strtoupper($this->option('method')))) {
-            return;
+            return [];
         }
 
         if ($this->option('except-path')) {
             foreach (explode(',', $this->option('except-path')) as $path) {
                 if (Str::contains($route['uri'], $path)) {
-                    return;
+                    return [];
                 }
             }
         }
@@ -153,7 +169,7 @@ class PrettyRoutesCommand extends Command
         if ($this->option('only-path')) {
             foreach (explode(',', $this->option('only-path')) as $path) {
                 if (! Str::contains($route['uri'], $path)) {
-                    return;
+                    return [];
                 }
             }
         }
@@ -161,6 +177,10 @@ class PrettyRoutesCommand extends Command
         return $route;
     }
 
+    /**
+     * @param array $routes
+     * @return void
+     */
     protected function displayRoutes(array $routes)
     {
         $terminalWidth = $this->getTerminalWidth();
@@ -191,7 +211,7 @@ class PrettyRoutesCommand extends Command
             }, explode('|', $method)));
 
             $this->output->writeln(sprintf(
-                '  <fg=white;options=bold>%s</>%s<fg=white;options=bold>%s</><fg=#6C7280> %s </>%s',
+                self::PRINTING_FORMAT,
                 $method,
                 $spaces,
                 preg_replace('#({[^}]+})#', '<comment>$1</comment>', $uri),
