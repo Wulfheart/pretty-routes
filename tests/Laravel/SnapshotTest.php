@@ -1,11 +1,10 @@
 <?php
 
-
-namespace Wulfheart\PrettyRoutes\Tests;
-
+namespace Wulfheart\PrettyRoutes\Tests\Laravel;
 
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Snapshots\MatchesSnapshots;
+use Wulfheart\PrettyRoutes\Tests\TestCase;
 
 final class SnapshotTest extends TestCase
 {
