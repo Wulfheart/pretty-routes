@@ -21,7 +21,6 @@ class PrettyRoutesCommand extends Command
 
     public $description = 'List all registered routes in a pretty format';
 
-
     /**
      * The current terminal width.
      *
@@ -29,14 +28,14 @@ class PrettyRoutesCommand extends Command
      */
     protected ?int $terminalWidth = null;
 
-    protected Router $router;
+    protected $router;
 
     /**
      * Computes the terminal width.
      *
      * @return int
      */
-    protected function getTerminalWidth()
+    protected function getTerminalWidth(): int
     {
         if ($this->terminalWidth == null) {
             $this->terminalWidth = (new Terminal())->getWidth();
@@ -49,11 +48,11 @@ class PrettyRoutesCommand extends Command
         return $this->terminalWidth;
     }
 
-    public function __construct(Router $router)
+    public function __construct()
     {
         parent::__construct();
 
-        $this->router = $router;
+        $this->router = app('router');
     }
 
     /**
@@ -83,7 +82,7 @@ class PrettyRoutesCommand extends Command
      *
      * @return array
      */
-    protected function getRoutes()
+    protected function getRoutes(): array
     {
         $routes = collect($this->router->getRoutes())->map(function ($route) {
             return $this->getRouteInformation($route);
@@ -104,15 +103,18 @@ class PrettyRoutesCommand extends Command
     /**
      * Get the route information for a given route.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param $route
+     *
      * @return array
      */
-    protected function getRouteInformation(Route $route)
+    protected function getRouteInformation($route): ?array
     {
+        /** @var Route $route */
         return $this->filterRoute([
             'method' => implode('|', $route->methods()),
             'uri' => $route->uri(),
             'name' => $route->getName(),
+            'middlewares' => $route->middleware(),
         ]);
     }
 
@@ -123,7 +125,7 @@ class PrettyRoutesCommand extends Command
      * @param  array  $routes
      * @return array
      */
-    protected function sortRoutes($sort, array $routes)
+    protected function sortRoutes(string $sort, array $routes): array
     {
         return Arr::sort($routes, function ($route) use ($sort) {
             return $route[$sort];
@@ -136,16 +138,16 @@ class PrettyRoutesCommand extends Command
      * @param  array  $route
      * @return array|null
      */
-    protected function filterRoute(array $route)
+    protected function filterRoute(array $route): ?array
     {
         if ($this->option('method') && ! Str::contains($route['method'], strtoupper($this->option('method')))) {
-            return;
+            return null;
         }
 
         if ($this->option('except-path')) {
             foreach (explode(',', $this->option('except-path')) as $path) {
                 if (Str::contains($route['uri'], $path)) {
-                    return;
+                    return null;
                 }
             }
         }
@@ -153,7 +155,7 @@ class PrettyRoutesCommand extends Command
         if ($this->option('only-path')) {
             foreach (explode(',', $this->option('only-path')) as $path) {
                 if (! Str::contains($route['uri'], $path)) {
-                    return;
+                    return null;
                 }
             }
         }
