@@ -11,6 +11,9 @@
         <testsuite name="Laravel">
             <directory suffix="Test.php">./tests/Laravel</directory>
         </testsuite>
+        <testsuite name="Lumen">
+            <directory suffix="Test.php">./tests/Lumen</directory>
+        </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
