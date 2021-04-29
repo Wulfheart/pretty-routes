@@ -1,6 +1,6 @@
 {
     "name": "wulfheart/pretty_routes",
-    "description": "This is my package PrettyRoutes",
+    "description": "Display your Laravel routes in the console, but make it pretty. 😎",
     "keywords": [
         "Wulfheart",
         "laravel",
