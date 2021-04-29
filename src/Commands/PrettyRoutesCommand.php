@@ -157,6 +157,8 @@ class PrettyRoutesCommand extends Command
             $method = $route["method"];
             $uri = $route["uri"];
             $name = $route["name"];
+            
+            $len = $maxMethod + 6 - strlen($method);
 
             $len = $len >= 0 ? $len : 1;
 
