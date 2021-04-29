@@ -1,0 +1,64 @@
+name: Run tests across Laravel/Lumen
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  laravel:
+    name: PHP [${{ matrix.php }}] - Laravel [${{ matrix.laravel }}]
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        php: [ 7.4, 8.0 ]
+        laravel: [ ^6, ^7, ^8 ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Install dependencies
+        run: composer require illuminate/contracts:${{ matrix.laravel }} --no-interaction --prefer-dist
+
+      - name: Run test suite
+        run: ./vendor/bin/phpunit --testsuite Laravel
+
+  lumen:
+    name: PHP [${{ matrix.php }}] - Lumen [${{ matrix.lumen }}]
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        php: [ 7.4, 8.0 ]
+        lumen: [ ^6, ^7, ^8 ]
+        exclude:
+          - php: 8.0
+            lumen: ^6
+          - php: 8.0
+            lumen: ^7
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+      - name: Install dependencies
+        run: |
+          composer remove orchestra/testbench --dev
+          composer remove illuminate/contracts
+          composer require illuminate/contracts:${{ matrix.lumen }} --no-interaction --prefer-dist
+          composer require anik/testbench-lumen:^1.1 --dev --no-interaction
+
+      - name: Run test suite
+        run: ./vendor/bin/phpunit --testsuite Lumen
