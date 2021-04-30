@@ -15,6 +15,12 @@ You can install the package via composer:
 composer require wulfheart/pretty_routes
 ```
 
+If you want to install this package on dev environment only run:
+
+```bash
+composer require --dev wulfheart/pretty_routes
+```
+
 ## Usage
 
 ```bash
