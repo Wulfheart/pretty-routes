@@ -43,10 +43,8 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         php: [ 7.4, 8.0 ]
-        lumen: [ ^6, ^7, ^8 ]
+        lumen: [ ^7, ^8 ]
         exclude:
-          - php: 8.0
-            lumen: ^6
           - php: 8.0
             lumen: ^7
 
