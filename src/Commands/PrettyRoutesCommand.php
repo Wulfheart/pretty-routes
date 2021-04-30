@@ -191,7 +191,7 @@ class PrettyRoutesCommand extends Command
             }, explode('|', $method)));
 
             $this->output->writeln(sprintf(
-                '  <fg=white;options=bold>%s</>%s<fg=white;options=bold>%s</><fg=#6C7280> %s </>%s',
+                '  <fg=white;options=bold>%s</>%s<fg=white;options=bold>%s</><fg=default> %s </>%s',
                 $method,
                 $spaces,
                 preg_replace('#({[^}]+})#', '<comment>$1</comment>', $uri),
