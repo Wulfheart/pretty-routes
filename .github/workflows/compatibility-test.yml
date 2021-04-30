@@ -60,7 +60,7 @@ jobs:
         run: |
           composer remove orchestra/testbench --dev --no-interaction --no-update
           composer remove illuminate/contracts --no-interaction --no-update
-          composer require illuminate/contracts:^7 --no-interaction --no-update
+          composer require illuminate/contracts:${{ matrix.lumen }} --no-interaction --no-update
           composer require anik/testbench-lumen:^1.1 --dev --no-interaction --no-update
           composer install
 
