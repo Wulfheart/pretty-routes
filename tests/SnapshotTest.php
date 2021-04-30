@@ -42,4 +42,12 @@ final class SnapshotTest extends TestCase
 
         $this->assertMatchesSnapshot(Artisan::output());
     }
+
+    /** @test */
+    public function except_name_and_only_name(): void
+    {
+        Artisan::call('route:pretty --except-name=test.store --only-name=test.');
+
+        $this->assertMatchesSnapshot(Artisan::output());
+    }
 }
