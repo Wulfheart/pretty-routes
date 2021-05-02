@@ -17,4 +17,36 @@ final class SnapshotTest extends TestCase
 
         $this->assertMatchesSnapshot(Artisan::output());
     }
+
+    /** @test */
+    public function ansi_output(): void
+    {
+        Artisan::call('route:pretty --ansi');
+
+        $this->assertMatchesSnapshot(Artisan::output());
+    }
+
+    /** @test */
+    public function only_name(): void
+    {
+        Artisan::call('route:pretty --only-name=test.');
+
+        $this->assertMatchesSnapshot(Artisan::output());
+    }
+
+    /** @test */
+    public function except_name(): void
+    {
+        Artisan::call('route:pretty --except-name=test.');
+
+        $this->assertMatchesSnapshot(Artisan::output());
+    }
+
+    /** @test */
+    public function except_name_and_only_name(): void
+    {
+        Artisan::call('route:pretty --except-name=test.store --only-name=test.');
+
+        $this->assertMatchesSnapshot(Artisan::output());
+    }
 }

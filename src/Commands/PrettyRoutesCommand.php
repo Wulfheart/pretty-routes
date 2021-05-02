@@ -14,7 +14,9 @@ class PrettyRoutesCommand extends Command
     public $signature = 'route:pretty
     {--sort=uri}
     {--except-path=}
+    {--except-name=}
     {--only-path=}
+    {--only-name=}
     {--method=}
     {--reverse}
     ';
@@ -153,6 +155,22 @@ class PrettyRoutesCommand extends Command
         if ($this->option('only-path')) {
             foreach (explode(',', $this->option('only-path')) as $path) {
                 if (! Str::contains($route['uri'], $path)) {
+                    return;
+                }
+            }
+        }
+
+        if ($this->option('except-name')) {
+            foreach (explode(',', $this->option('except-name')) as $path) {
+                if (Str::contains($route['name'], $path)) {
+                    return;
+                }
+            }
+        }
+
+        if ($this->option('only-name')) {
+            foreach (explode(',', $this->option('only-name')) as $path) {
+                if (! Str::contains($route['name'], $path)) {
                     return;
                 }
             }
