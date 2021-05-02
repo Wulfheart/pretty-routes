@@ -29,7 +29,7 @@ jobs:
           coverage: none
 
       - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+        run: composer install -q --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
       - name: Execute tests
         run: vendor/bin/phpunit
