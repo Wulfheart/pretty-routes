@@ -3,7 +3,6 @@
 
 namespace Wulfheart\PrettyRoutes\Tests;
 
-
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Snapshots\MatchesSnapshots;
 
