@@ -18,6 +18,7 @@ class PrettyRoutesCommand extends Command
     {--only-path=}
     {--only-name=}
     {--method=}
+    {--group=}
     {--reverse}
     ';
 
@@ -61,23 +62,37 @@ class PrettyRoutesCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
+//        if (($this->option('except-path') && $this->option('only-path'))
+//            || ($this->option('except-name') && $this->option('only-name'))) {
+//            $this->error("Cannot use the 'except' and 'only' option of one type together.");
+//            return;
+//        }
+
+
         if (method_exists($this->router, 'flushMiddlewareGroups')) {
             $this->router->flushMiddlewareGroups();
         }
 
         if (empty($this->router->getRoutes())) {
-            return $this->error("Your application doesn't have any routes.");
+            $this->error("Your application doesn't have any routes.");
+            return;
         }
 
         if (empty($routes = $this->getRoutes())) {
-            return $this->error("Your application doesn't have any routes matching the given criteria.");
+            $this->error("Your application doesn't have any routes matching the given criteria.");
+            return;
         }
 
-        $this->displayRoutes($routes);
+        if(!$this->option('group')){
+            $this->displayUngroupedRoutes($routes);
+
+        } else {
+            $this->displayGroupedRoutes($routes);
+        }
+
     }
 
     /**
@@ -100,7 +115,6 @@ class PrettyRoutesCommand extends Command
         }
 
         return $routes;
-        //        return $this->pluckColumns($routes);
     }
 
     /**
@@ -141,13 +155,15 @@ class PrettyRoutesCommand extends Command
     protected function filterRoute(array $route)
     {
         if ($this->option('method') && ! Str::contains($route['method'], strtoupper($this->option('method')))) {
-            return;
+            return null;
         }
+
+        $tempRoute = $route;
 
         if ($this->option('except-path')) {
             foreach (explode(',', $this->option('except-path')) as $path) {
                 if (Str::contains($route['uri'], $path)) {
-                    return;
+                    $tempRoute = null;
                 }
             }
         }
@@ -155,7 +171,7 @@ class PrettyRoutesCommand extends Command
         if ($this->option('only-path')) {
             foreach (explode(',', $this->option('only-path')) as $path) {
                 if (! Str::contains($route['uri'], $path)) {
-                    return;
+                    $tempRoute = null;
                 }
             }
         }
@@ -163,7 +179,7 @@ class PrettyRoutesCommand extends Command
         if ($this->option('except-name')) {
             foreach (explode(',', $this->option('except-name')) as $path) {
                 if (Str::contains($route['name'], $path)) {
-                    return;
+                    $tempRoute = null;
                 }
             }
         }
@@ -171,32 +187,100 @@ class PrettyRoutesCommand extends Command
         if ($this->option('only-name')) {
             foreach (explode(',', $this->option('only-name')) as $path) {
                 if (! Str::contains($route['name'], $path)) {
-                    return;
+                    $tempRoute = null;
                 }
             }
         }
 
-        return $route;
+        return $tempRoute;
     }
 
-    protected function displayRoutes(array $routes)
+    protected function displayGroupedRoutes(array $routes): void{
+        $terminalWidth = $this->getTerminalWidth();
+
+        $maxMethod = strlen(collect($routes)->max('method'));
+
+        $groups = [];
+        switch (strtolower($this->option('group'))){
+            case 'path':
+                $groups = $this->groupRoutesByPath($routes);
+                break;
+            case 'name':
+                $groups = $this->groupRoutesByName($routes);
+                break;
+            default:
+                $this->error("Grouping mode must be 'path' or 'name'.");
+        }
+
+        $firstIteration = true;
+        foreach ($groups as $group => $routes){
+            if(! $firstIteration){
+                $this->line('');
+            }
+            $leftSpaces = ($terminalWidth - 14 - strlen($group))/2;
+
+
+            $this->line(sprintf("%s<fg=white;options=bold,underscore>%s</>", str_repeat(' ', $leftSpaces), $group));
+            foreach ($routes as $route){
+                $this->output->writeln($this->renderRoute($route, $terminalWidth, $maxMethod));
+            }
+
+            $firstIteration = false;
+        }
+
+
+    }
+
+    protected function groupRoutesByPath(array $routes): array {
+        $groups = [];
+        foreach ($routes as $route){
+            $uri = $route["uri"];
+
+            $groupName = explode('/', $uri)[0];
+            $groups[$groupName][] = $route;
+        }
+
+        ksort($groups);
+        return $groups;
+    }
+
+    protected function groupRoutesByName(array $routes): array {
+        $groups = [];
+        foreach ($routes as $route){
+            $name = $route["name"];
+
+            $groupName = explode('.', $name)[0];
+            $groups[$groupName][] = $route;
+        }
+
+        ksort($groups);
+        return $groups;
+    }
+
+    protected function displayUngroupedRoutes(array $routes)
     {
         $terminalWidth = $this->getTerminalWidth();
 
         $maxMethod = strlen(collect($routes)->max('method'));
 
         foreach ($routes as $route) {
-            $method = $route["method"];
-            $uri = $route["uri"];
-            $name = $route["name"];
+            $this->output->writeln($this->renderRoute($route, $terminalWidth, $maxMethod));
+        }
+    }
 
-            $spaces = str_repeat(' ', max($maxMethod + 6 - strlen($method), 0));
+    protected function renderRoute(array $route, int $terminalWidth, int $maxMethod): string
+    {
+        $method = $route["method"];
+        $uri = $route["uri"];
+        $name = $route["name"];
 
-            $additionalSpace = ! is_null($name) ? 1 : 0;
-            $dots = str_repeat('.', max($terminalWidth - strlen($method.$uri.$name) - strlen($spaces) - 14 - $additionalSpace, 0));
+        $spaces = str_repeat(' ', max($maxMethod + 6 - strlen($method), 0));
 
-            $method = implode('|', array_map(function ($m) {
-                $color = [
+        $additionalSpace = ! is_null($name) ? 1 : 0;
+        $dots = str_repeat('.', max($terminalWidth - strlen($method.$uri.$name) - strlen($spaces) - 14 - $additionalSpace, 0));
+
+        $method = implode('|', array_map(function ($m) {
+            $color = [
                     'GET' => 'green',
                     'HEAD' => 'default',
                     'OPTIONS' => 'default',
@@ -206,17 +290,16 @@ class PrettyRoutesCommand extends Command
                     'DELETE' => 'red',
                 ][$m] ?? 'white';
 
-                return sprintf("<fg=%s>%s</>", $color, $m);
-            }, explode('|', $method)));
+            return sprintf("<fg=%s>%s</>", $color, $m);
+        }, explode('|', $method)));
 
-            $this->output->writeln(sprintf(
-                '  <fg=white;options=bold>%s</>%s<fg=white;options=bold>%s</><fg=#6C7280> %s </>%s',
-                $method,
-                $spaces,
-                preg_replace('#({[^}]+})#', '<comment>$1</comment>', $uri),
-                $dots,
-                $name,
-            ));
-        }
+        return sprintf(
+            '  <fg=white;options=bold>%s</>%s<fg=white;options=bold>%s</><fg=#6C7280> %s </>%s',
+            $method,
+            $spaces,
+            preg_replace('#({[^}]+})#', '<comment>$1</comment>', $uri),
+            $dots,
+            $name,
+        );
     }
 }
