@@ -187,7 +187,6 @@ class PrettyRoutesCommand extends Command
                     'PATCH' => 'yellow',
                     'DELETE' => 'red',
                 ][$m] ?? 'white';
-
                 return sprintf("<fg=%s>%s</>", $color, $m);
             }, explode('|', $method)));
 
