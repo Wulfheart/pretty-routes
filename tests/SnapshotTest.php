@@ -18,12 +18,5 @@ final class SnapshotTest extends TestCase
 
         $this->assertMatchesSnapshot(Artisan::output());
     }
-
-    /** @test */
-    public function ansi_output(): void
-    {
-        Artisan::call('route:pretty --ansi');
-
-        $this->assertMatchesSnapshot(Artisan::output());
-    }
+    
 }
