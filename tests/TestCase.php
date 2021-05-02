@@ -2,44 +2,23 @@
 
 namespace Wulfheart\PrettyRoutes\Tests;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Routing\Controller;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Wulfheart\PrettyRoutes\PrettyRoutesServiceProvider;
 
-class TestCase extends Orchestra
+abstract class TestCase extends Orchestra
 {
-    public function setUp(): void
+    protected function getPackageProviders($app): array
     {
-        parent::setUp();
-
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Spatie\\PrettyRoutes\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
+        return [PrettyRoutesServiceProvider::class];
     }
 
-    protected function getPackageProviders($app)
+    protected function getEnvironmentSetUp($app): void
     {
-        return [
-            PrettyRoutesServiceProvider::class,
-        ];
+        putenv('COLUMNS=120');
     }
 
-    public function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('database.default', 'sqlite');
-        $app['config']->set('database.connections.sqlite', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-        ]);
-
-        /*
-        include_once __DIR__.'/../database/migrations/create_pretty_routes_table.php.stub';
-        (new \CreatePackageTable())->up();
-        */
-    }
-
-    public function defineRoutes($router)
+    public function defineRoutes($router): void
     {
         $router->get('/', function () {
             return view('welcome');

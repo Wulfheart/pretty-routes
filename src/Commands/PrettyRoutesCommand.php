@@ -11,9 +11,10 @@ use Symfony\Component\Console\Terminal;
 
 class PrettyRoutesCommand extends Command
 {
-    public $signature = 'route:pretty 
+    public $signature = 'route:pretty
     {--sort=uri}
     {--except-path=}
+    {--only-path=}
     {--method=}
     {--reverse}
     ';
@@ -26,7 +27,9 @@ class PrettyRoutesCommand extends Command
      *
      * @var int|null
      */
-    protected $terminalWidth;
+    protected ?int $terminalWidth = null;
+
+    protected Router $router;
 
     /**
      * Computes the terminal width.
@@ -60,7 +63,9 @@ class PrettyRoutesCommand extends Command
      */
     public function handle()
     {
-        $this->router->flushMiddlewareGroups();
+        if (method_exists($this->router, 'flushMiddlewareGroups')) {
+            $this->router->flushMiddlewareGroups();
+        }
 
         if (empty($this->router->getRoutes())) {
             return $this->error("Your application doesn't have any routes.");
@@ -136,9 +141,18 @@ class PrettyRoutesCommand extends Command
         if ($this->option('method') && ! Str::contains($route['method'], strtoupper($this->option('method')))) {
             return;
         }
+
         if ($this->option('except-path')) {
             foreach (explode(',', $this->option('except-path')) as $path) {
                 if (Str::contains($route['uri'], $path)) {
+                    return;
+                }
+            }
+        }
+
+        if ($this->option('only-path')) {
+            foreach (explode(',', $this->option('only-path')) as $path) {
+                if (! Str::contains($route['uri'], $path)) {
                     return;
                 }
             }
