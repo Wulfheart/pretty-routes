@@ -78,21 +78,21 @@ class PrettyRoutesCommand extends Command
 
         if (empty($this->router->getRoutes())) {
             $this->error("Your application doesn't have any routes.");
+
             return;
         }
 
         if (empty($routes = $this->getRoutes())) {
             $this->error("Your application doesn't have any routes matching the given criteria.");
+
             return;
         }
 
-        if(!$this->option('group')){
+        if (! $this->option('group')) {
             $this->displayUngroupedRoutes($routes);
-
         } else {
             $this->displayGroupedRoutes($routes);
         }
-
     }
 
     /**
@@ -195,45 +195,47 @@ class PrettyRoutesCommand extends Command
         return $tempRoute;
     }
 
-    protected function displayGroupedRoutes(array $routes): void{
+    protected function displayGroupedRoutes(array $routes): void
+    {
         $terminalWidth = $this->getTerminalWidth();
 
         $maxMethod = strlen(collect($routes)->max('method'));
 
         $groups = [];
-        switch (strtolower($this->option('group'))){
+        switch (strtolower($this->option('group'))) {
             case 'path':
                 $groups = $this->groupRoutesByPath($routes);
+
                 break;
             case 'name':
                 $groups = $this->groupRoutesByName($routes);
+
                 break;
             default:
                 $this->error("Grouping mode must be 'path' or 'name'.");
         }
 
         $firstIteration = true;
-        foreach ($groups as $group => $routes){
-            if(! $firstIteration){
+        foreach ($groups as $group => $routes) {
+            if (! $firstIteration) {
                 $this->line('');
             }
-            $leftSpaces = ($terminalWidth - 14 - strlen($group))/2;
+            $leftSpaces = ($terminalWidth - 14 - strlen($group)) / 2;
 
 
             $this->line(sprintf("%s<fg=white;options=bold,underscore>%s</>", str_repeat(' ', $leftSpaces), $group));
-            foreach ($routes as $route){
+            foreach ($routes as $route) {
                 $this->output->writeln($this->renderRoute($route, $terminalWidth, $maxMethod));
             }
 
             $firstIteration = false;
         }
-
-
     }
 
-    protected function groupRoutesByPath(array $routes): array {
+    protected function groupRoutesByPath(array $routes): array
+    {
         $groups = [];
-        foreach ($routes as $route){
+        foreach ($routes as $route) {
             $uri = $route["uri"];
 
             $groupName = explode('/', $uri)[0];
@@ -241,12 +243,14 @@ class PrettyRoutesCommand extends Command
         }
 
         ksort($groups);
+
         return $groups;
     }
 
-    protected function groupRoutesByName(array $routes): array {
+    protected function groupRoutesByName(array $routes): array
+    {
         $groups = [];
-        foreach ($routes as $route){
+        foreach ($routes as $route) {
             $name = $route["name"];
 
             $groupName = explode('.', $name)[0];
@@ -254,6 +258,7 @@ class PrettyRoutesCommand extends Command
         }
 
         ksort($groups);
+
         return $groups;
     }
 

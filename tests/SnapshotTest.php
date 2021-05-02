@@ -17,13 +17,13 @@ final class SnapshotTest extends TestCase
      */
     public function basic_output(string $command): void
     {
-
         Artisan::call($command);
 
         $this->assertMatchesSnapshot(Artisan::output());
     }
 
-    public function cliDataProvider(){
+    public function cliDataProvider()
+    {
         $groups = ['', 'path', 'name'];
 
         $commands = [
@@ -35,13 +35,14 @@ final class SnapshotTest extends TestCase
         ];
 
         $data = [];
-        foreach ($groups as $group){
-            foreach ($commands as $description => $baseCommand){
+        foreach ($groups as $group) {
+            foreach ($commands as $description => $baseCommand) {
                 $fullDescription = sprintf("group_%s-%s",  empty($group) ? 'none' : $group, $description);
                 $fullCommand = sprintf("%s %s", $baseCommand, empty($group) ? '' : sprintf('--group=%s', $group));
                 $data[$fullDescription][] = $fullCommand;
             }
         }
+
         return $data;
     }
 
