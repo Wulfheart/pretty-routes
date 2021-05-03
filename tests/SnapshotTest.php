@@ -13,9 +13,11 @@ final class SnapshotTest extends TestCase
     /**
      * @test
      *
+     * These are not complete but should do the trick.
+     *
      * @dataProvider cliDataProvider
      */
-    public function basic_output(string $command): void
+    public function basic_snapshot_tests(string $command): void
     {
         Artisan::call($command);
 
@@ -27,11 +29,14 @@ final class SnapshotTest extends TestCase
         $groups = ['', 'path', 'name'];
 
         $commands = [
-            'basic_output' => 'route:pretty',
-            'only-name' => 'route:pretty --only-name=fire.',
-            'only-path' => 'route:pretty --only-path=fire.',
-            'except-name' => 'route:pretty --except-name=fire.',
-            'except-path' => 'route:pretty --except-path=fire.',
+            'basic_output' => '',
+            'only-name' => '--only-name=fire.',
+            'only-path' => '--only-path=fire.',
+            'except-name' => '--except-name=fire.',
+            'except-path' => '--except-path=fire.',
+            'except-name_except-path' => '--except-name=.admin --except-path=fire',
+            'except-name_only-path' => '--except-name=.admin --only-path=user',
+            'only-path-multiple' => '--only-path=fire,water',
         ];
 
         $data = [];
@@ -39,34 +44,10 @@ final class SnapshotTest extends TestCase
             foreach ($commands as $description => $baseCommand) {
                 $fullDescription = sprintf("group_%s-%s",  empty($group) ? 'none' : $group, $description);
                 $fullCommand = sprintf("%s %s", $baseCommand, empty($group) ? '' : sprintf('--group=%s', $group));
-                $data[$fullDescription][] = $fullCommand;
+                $data[$fullDescription][] = 'route:pretty ' . $fullCommand;
             }
         }
 
         return $data;
     }
-
-//    /** @test */
-//    public function only_name(): void
-//    {
-//        Artisan::call('route:pretty --only-name=test.');
-//
-//        $this->assertMatchesSnapshot(Artisan::output());
-//    }
-//
-//    /** @test */
-//    public function except_name(): void
-//    {
-//        Artisan::call('route:pretty --except-name=test.');
-//
-//        $this->assertMatchesSnapshot(Artisan::output());
-//    }
-//
-//    /** @test */
-//    public function except_name_and_only_name(): void
-//    {
-//        Artisan::call('route:pretty --except-name=test.store --only-name=test.');
-//
-//        $this->assertMatchesSnapshot(Artisan::output());
-//    }
 }

@@ -20,6 +20,7 @@ class PrettyRoutesCommand extends Command
     {--method=}
     {--group=}
     {--reverse}
+    {--reverse-group}
     ';
 
     public $description = 'List all registered routes in a pretty format';
@@ -242,7 +243,11 @@ class PrettyRoutesCommand extends Command
             $groups[$groupName][] = $route;
         }
 
-        ksort($groups);
+        if ($this->option('reverse-group')) {
+            krsort($groups);
+        } else {
+            ksort($groups);
+        }
 
         return $groups;
     }
