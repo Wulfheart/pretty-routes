@@ -25,8 +25,14 @@ or
 ```bash
 php artisan route:pretty --except-path=horizon --method=POST --reverse
 php artisan route:pretty --only-path=app --method=POST --reverse
-php artisan route:pretty --only-name=app --method=POST --reverse
+php artisan route:pretty --only-name=app --method=POST 
+php artisan route:pretty --only-name=app --method=POST --group=path --reverse-group
+php artisan route:pretty --only-name=app,horizon,debugbar --except-path=foo,bar --group=name --reverse
 ```
+
+## Advanced Example
+
+<img src="https://user-images.githubusercontent.com/25671390/116859537-6cc8ab80-ac00-11eb-9376-e6baee12ace8.png"/>
 
 ## Changelog
 
@@ -39,6 +45,10 @@ Feel free to open an issue or a PR. Discussions are disabled right now as there 
 ## Credits
 
 - [Alexander Wulf](https://github.com/Wulfheart)
+- [Tom Witkowski](https://github.com/Gummibeer)
+- [Matt Staufer](https://github.com/mattstauffer)
+- [Bhushan Gaikwad](https://github.com/bhushan)
+- [Edward Akerboom](https://github.com/infostreams)
 
 ## License
 
