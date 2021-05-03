@@ -12,15 +12,15 @@ use Symfony\Component\Console\Terminal;
 class PrettyRoutesCommand extends Command
 {
     public $signature = 'route:pretty
-    {--sort=uri}
-    {--except-path=}
-    {--except-name=}
-    {--only-path=}
-    {--only-name=}
-    {--method=}
-    {--group=}
-    {--reverse}
-    {--reverse-group}
+    {--sort=uri : The sort method for the routes. Supported: uri, name}
+    {--except-path= : Excludes routes which contain a given path element. (comma-separated values)}
+    {--except-name= : Excludes routes which contain a given route name element. (comma-separated values)}
+    {--only-path= : Includes only routes which contain a given path element. (comma-separated values)}
+    {--only-name= : Includes only routes which contain a given route name element. (comma-separated values)}
+    {--method= : Filters after a HTTP method.}
+    {--group= : Groups routes. Supported: path, name}
+    {--reverse : Reverses the route order.}
+    {--reverse-group : Reverses the route group order.}
     ';
 
     public $description = 'List all registered routes in a pretty format';
@@ -53,6 +53,10 @@ class PrettyRoutesCommand extends Command
         return $this->terminalWidth;
     }
 
+    /**
+     * PrettyRoutesCommand constructor.
+     * @param  \Illuminate\Routing\Router  $router
+     */
     public function __construct(Router $router)
     {
         parent::__construct();
@@ -66,13 +70,6 @@ class PrettyRoutesCommand extends Command
      */
     public function handle(): void
     {
-//        if (($this->option('except-path') && $this->option('only-path'))
-//            || ($this->option('except-name') && $this->option('only-name'))) {
-//            $this->error("Cannot use the 'except' and 'only' option of one type together.");
-//            return;
-//        }
-
-
         if (method_exists($this->router, 'flushMiddlewareGroups')) {
             $this->router->flushMiddlewareGroups();
         }
@@ -170,10 +167,10 @@ class PrettyRoutesCommand extends Command
         }
 
         if ($this->option('only-path')) {
-            foreach (explode(',', $this->option('only-path')) as $path) {
-                if (! Str::contains($route['uri'], $path)) {
-                    $tempRoute = null;
-                }
+            if (count(array_filter(explode(',', $this->option('only-path')), function (string $element) use ($route) {
+                return Str::contains($route['uri'], $element);
+            })) == 0) {
+                $tempRoute = null;
             }
         }
 
@@ -186,16 +183,19 @@ class PrettyRoutesCommand extends Command
         }
 
         if ($this->option('only-name')) {
-            foreach (explode(',', $this->option('only-name')) as $path) {
-                if (! Str::contains($route['name'], $path)) {
-                    $tempRoute = null;
-                }
+            if (count(array_filter(explode(',', $this->option('only-name')), function (string $element) use ($route) {
+                return Str::contains($route['name'], $element);
+            })) == 0) {
+                $tempRoute = null;
             }
         }
 
         return $tempRoute;
     }
 
+    /**
+     * @param  array  $routes
+     */
     protected function displayGroupedRoutes(array $routes): void
     {
         $terminalWidth = $this->getTerminalWidth();
@@ -233,6 +233,10 @@ class PrettyRoutesCommand extends Command
         }
     }
 
+    /**
+     * @param  array  $routes
+     * @return array
+     */
     protected function groupRoutesByPath(array $routes): array
     {
         $groups = [];
@@ -252,6 +256,10 @@ class PrettyRoutesCommand extends Command
         return $groups;
     }
 
+    /**
+     * @param  array  $routes
+     * @return array
+     */
     protected function groupRoutesByName(array $routes): array
     {
         $groups = [];
@@ -267,6 +275,9 @@ class PrettyRoutesCommand extends Command
         return $groups;
     }
 
+    /**
+     * @param  array  $routes
+     */
     protected function displayUngroupedRoutes(array $routes)
     {
         $terminalWidth = $this->getTerminalWidth();
@@ -278,6 +289,12 @@ class PrettyRoutesCommand extends Command
         }
     }
 
+    /**
+     * @param  array  $route
+     * @param  int  $terminalWidth
+     * @param  int  $maxMethod
+     * @return string
+     */
     protected function renderRoute(array $route, int $terminalWidth, int $maxMethod): string
     {
         $method = $route["method"];

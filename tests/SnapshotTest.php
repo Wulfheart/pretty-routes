@@ -31,7 +31,7 @@ final class SnapshotTest extends TestCase
         $commands = [
             'basic_output' => '',
             'only-name' => '--only-name=fire.',
-            'only-path' => '--only-path=fire.',
+            'only-path' => '--only-path=fire/',
             'except-name' => '--except-name=fire.',
             'except-path' => '--except-path=fire.',
             'except-name_except-path' => '--except-name=.admin --except-path=fire',
