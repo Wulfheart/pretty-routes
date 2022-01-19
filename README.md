@@ -7,6 +7,10 @@ Display your Laravel routes in the console, but make it pretty. 😎
 
 <img src="https://user-images.githubusercontent.com/25671390/116441604-e0aa3300-a851-11eb-9e98-a59ff356c9dc.png"/>
 
+## Note
+
+With the arrival of Laravel 9 this package is going to be deprecated as the functionality will already be integrated in the framework as per [this PR](https://github.com/laravel/framework/pull/40269). Thanks for the support! ⭐
+
 ## Installation
 
 You can install the package via composer:
